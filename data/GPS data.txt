@@ -1,0 +1,212 @@
+======== DJI_0269.JPG
+GPS Latitude                    : 12.5177483888889
+GPS Longitude                   : 75.4400790555556
+GPS Altitude                    : 124.081
+======== DJI_0270.JPG
+GPS Latitude                    : 12.5177485833333
+GPS Longitude                   : 75.4400744722222
+GPS Altitude                    : 124.081
+======== DJI_0271.JPG
+GPS Latitude                    : 12.5177486388889
+GPS Longitude                   : 75.44007475
+GPS Altitude                    : 124.081
+======== DJI_0272.JPG
+GPS Latitude                    : 12.5177488888889
+GPS Longitude                   : 75.4400749444444
+GPS Altitude                    : 124.081
+======== DJI_0273.JPG
+GPS Latitude                    : 12.5177187222222
+GPS Longitude                   : 75.4400747222222
+GPS Altitude                    : 124.281
+======== DJI_0274.JPG
+GPS Latitude                    : 12.5177136944444
+GPS Longitude                   : 75.4400757777778
+GPS Altitude                    : 124.181
+======== DJI_0275.JPG
+GPS Latitude                    : 12.5177135
+GPS Longitude                   : 75.4400756111111
+GPS Altitude                    : 124.081
+======== DJI_0276.JPG
+GPS Latitude                    : 12.5175994444444
+GPS Longitude                   : 75.4399590833333
+GPS Altitude                    : 124.681
+======== DJI_0277.JPG
+GPS Latitude                    : 12.5177858888889
+GPS Longitude                   : 75.4399837222222
+GPS Altitude                    : 124.281
+======== DJI_0278.JPG
+GPS Latitude                    : 12.5177869166667
+GPS Longitude                   : 75.4399826666667
+GPS Altitude                    : 124.281
+======== DJI_0279.JPG
+GPS Latitude                    : 12.5178013611111
+GPS Longitude                   : 75.4399708611111
+GPS Altitude                    : 124.181
+======== DJI_0280.JPG
+GPS Latitude                    : 12.51781825
+GPS Longitude                   : 75.4399496944445
+GPS Altitude                    : 127.381
+======== DJI_0281.JPG
+GPS Latitude                    : 12.5178286944444
+GPS Longitude                   : 75.4399455833333
+GPS Altitude                    : 126.381
+======== DJI_0282.JPG
+GPS Latitude                    : 12.5178289166667
+GPS Longitude                   : 75.4399458055556
+GPS Altitude                    : 126.281
+======== DJI_0283.JPG
+GPS Latitude                    : 12.5184781666667
+GPS Longitude                   : 75.4395945833333
+GPS Altitude                    : 124.881
+======== DJI_0284.JPG
+GPS Latitude                    : 12.5184809166667
+GPS Longitude                   : 75.4395962777778
+GPS Altitude                    : 124.881
+======== DJI_0285.JPG
+GPS Latitude                    : 12.5185138055556
+GPS Longitude                   : 75.4395785
+GPS Altitude                    : 126.981
+======== DJI_0286.JPG
+GPS Latitude                    : 12.5185472222222
+GPS Longitude                   : 75.4395310833333
+GPS Altitude                    : 127.881
+======== DJI_0287.JPG
+GPS Latitude                    : 12.5185600833333
+GPS Longitude                   : 75.4395378333333
+GPS Altitude                    : 127.881
+======== DJI_0288.JPG
+GPS Latitude                    : 12.5209274166667
+GPS Longitude                   : 75.4471771944444
+GPS Altitude                    : 148.386
+======== DJI_0289.JPG
+GPS Latitude                    : 12.5210199444444
+GPS Longitude                   : 75.4473099444444
+GPS Altitude                    : 145.786
+======== DJI_0290.JPG
+GPS Latitude                    : 12.52103275
+GPS Longitude                   : 75.4473139166667
+GPS Altitude                    : 145.686
+======== DJI_0291.JPG
+GPS Latitude                    : 12.5212066111111
+GPS Longitude                   : 75.4473083888889
+GPS Altitude                    : 150.686
+======== DJI_0292.JPG
+GPS Latitude                    : 12.52112825
+GPS Longitude                   : 75.4472393333333
+GPS Altitude                    : 156.686
+======== DJI_0293.JPG
+GPS Latitude                    : 12.5211289166667
+GPS Longitude                   : 75.4472392222222
+GPS Altitude                    : 148.786
+======== DJI_0294.JPG
+GPS Latitude                    : 12.52105625
+GPS Longitude                   : 75.4474213888889
+GPS Altitude                    : 152.286
+======== DJI_0295.JPG
+GPS Latitude                    : 12.5210415833333
+GPS Longitude                   : 75.4474601111111
+GPS Altitude                    : 152.186
+======== DJI_0296.JPG
+GPS Latitude                    : 12.5210294722222
+GPS Longitude                   : 75.4474761111111
+GPS Altitude                    : 154.186
+======== DJI_0297.JPG
+GPS Latitude                    : 12.5210291944444
+GPS Longitude                   : 75.4474680277778
+GPS Altitude                    : 153.786
+======== DJI_0298.JPG
+GPS Latitude                    : 12.52103075
+GPS Longitude                   : 75.44746725
+GPS Altitude                    : 158.886
+======== DJI_0299.JPG
+GPS Latitude                    : 12.5208905833333
+GPS Longitude                   : 75.4474522777778
+GPS Altitude                    : 153.586
+======== DJI_0300.JPG
+GPS Latitude                    : 12.5208884166667
+GPS Longitude                   : 75.4474522777778
+GPS Altitude                    : 151.186
+======== DJI_0301.JPG
+GPS Latitude                    : 12.5208868888889
+GPS Longitude                   : 75.4474518888889
+GPS Altitude                    : 151.286
+======== DJI_0302.JPG
+GPS Latitude                    : 12.5208858055556
+GPS Longitude                   : 75.4474523611111
+GPS Altitude                    : 150.186
+======== DJI_0303.JPG
+GPS Latitude                    : 12.5208845833333
+GPS Longitude                   : 75.4474550555556
+GPS Altitude                    : 154.686
+======== DJI_0304.JPG
+GPS Latitude                    : 12.5207128055556
+GPS Longitude                   : 75.4474079444444
+GPS Altitude                    : 155.586
+======== DJI_0305.JPG
+GPS Latitude                    : 12.5207119166667
+GPS Longitude                   : 75.4474061111111
+GPS Altitude                    : 153.886
+======== DJI_0306.JPG
+GPS Latitude                    : 12.5206404166667
+GPS Longitude                   : 75.44738575
+GPS Altitude                    : 151.086
+======== DJI_0307.JPG
+GPS Latitude                    : 12.5206318333333
+GPS Longitude                   : 75.4473880555555
+GPS Altitude                    : 148.486
+======== DJI_0308.JPG
+GPS Latitude                    : 12.520632
+GPS Longitude                   : 75.4473881111111
+GPS Altitude                    : 148.486
+======== DJI_0309.JPG
+GPS Latitude                    : 12.5205393333333
+GPS Longitude                   : 75.4474171388889
+GPS Altitude                    : 153.586
+======== DJI_0310.JPG
+GPS Latitude                    : 12.5205375277778
+GPS Longitude                   : 75.4474167777778
+GPS Altitude                    : 149.486
+======== DJI_0311.JPG
+GPS Latitude                    : 12.5205361111111
+GPS Longitude                   : 75.4474171388889
+GPS Altitude                    : 168.686
+======== DJI_0312.JPG
+GPS Latitude                    : 12.5205363888889
+GPS Longitude                   : 75.4474182222222
+GPS Altitude                    : 153.186
+======== DJI_0313.JPG
+GPS Latitude                    : 12.5205276388889
+GPS Longitude                   : 75.4474005833333
+GPS Altitude                    : 148.786
+======== DJI_0314.JPG
+GPS Latitude                    : 12.5205304722222
+GPS Longitude                   : 75.4474041944444
+GPS Altitude                    : 154.086
+======== DJI_0315.JPG
+GPS Latitude                    : 12.5205177777778
+GPS Longitude                   : 75.4473510277778
+GPS Altitude                    : 147.886
+======== DJI_0316.JPG
+GPS Latitude                    : 12.5208674722222
+GPS Longitude                   : 75.4473330833333
+GPS Altitude                    : 165.686
+======== DJI_0317.JPG
+GPS Latitude                    : 12.5208719444444
+GPS Longitude                   : 75.4474965833333
+GPS Altitude                    : 165.586
+======== DJI_0318.JPG
+GPS Latitude                    : 12.5208706111111
+GPS Longitude                   : 75.4474971111111
+GPS Altitude                    : 155.586
+======== DJI_0319.JPG
+GPS Latitude                    : 12.521216
+GPS Longitude                   : 75.4472783888889
+GPS Altitude                    : 150.886
+======== DJI_0320.JPG
+GPS Latitude                    : 12.5212190277778
+GPS Longitude                   : 75.447279
+GPS Altitude                    : 149.486
+======== DJI_0321.JPG
+GPS Latitude                    : 12.5212196666667
+GPS Longitude                   : 75.4472798888889
+GPS Altitude                    : 149.786

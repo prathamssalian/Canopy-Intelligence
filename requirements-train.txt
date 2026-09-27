@@ -1,0 +1,8 @@
+# Training / dataset tooling only -- NOT installed on Vercel.
+# torch alone is ~6.6 GB and would blow the 250 MB function limit.
+ultralytics==8.4.136
+albumentations>=2.0
+opencv-python
+pyyaml
+onnx
+onnxslim

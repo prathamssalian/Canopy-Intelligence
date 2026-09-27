@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canopy / Drone site</title>
+<style>
+body{margin:0;padding:28px;background:#f3f7f2;color:#10211b;font:16px Arial,sans-serif}
+main{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.panel{background:#fff;border:1px solid #d8e2d9;border-radius:8px;padding:22px;margin-bottom:18px}
+h1{margin:0 0 8px}h2{margin-top:0}.muted{color:#68736c}
+.camera{position:relative;background:#102c35;border-radius:6px;overflow:hidden}.camera video{display:block;width:100%}
+.camera canvas{position:absolute;inset:0;width:100%;height:100%}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+button,select{padding:12px 16px;border:0;border-radius:4px;font-size:14px}
+button{background:#c8ec62;color:#102c35;font-weight:bold;cursor:pointer}button:disabled{opacity:.55}
+select{border:1px solid #d8e2d9;background:#fff}.status{color:#527b62}.error{color:#8a3028}
+a{color:#315d43}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><strong>Canopy / Drone site</strong><a href="/user">Open user site</a></div>
+<section class="panel">
+<h1>Capture and send drone analysis</h1>
+<p class="muted">Capture an image from the drone camera and send the YOLO/YLD result to the user site. GPS is resolved for uploaded original drone images on the user site.</p>
+<div class="camera"><video id="video" autoplay muted playsinline></video><canvas id="overlay"></canvas></div>
+<div class="controls">
+<button id="start" type="button">Start camera</button>
+<button id="capture" type="button" disabled>Capture and send</button>
+</div>
+<p id="status" class="status">Camera is off.</p>
+</section>
+</main>
+<script>
+(function () {
+  var video=document.getElementById('video'), overlay=document.getElementById('overlay');
+  var start=document.getElementById('start'), capture=document.getElementById('capture');
+  var status=document.getElementById('status'), stream=null;
+  start.onclick=function(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){status.textContent='Camera access is not supported.';return;}
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(function(s){
+      stream=s;video.srcObject=s;capture.disabled=false;status.textContent='Camera ready.';
+    }).catch(function(){status.textContent='Camera access was denied or unavailable.';});
+  };
+  capture.onclick=function(){
+    if(!video.videoWidth)return;
+    capture.disabled=true;status.textContent='Running YOLO analysis…';
+    var canvas=document.createElement('canvas'), scale=Math.min(1,1600/Math.max(video.videoWidth,video.videoHeight));
+    canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
+    canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+    canvas.toBlob(function(blob){
+      var data=new FormData();data.append('frame',blob,'camera.jpg');
+      fetch('/drone/publish',{method:'POST',body:data}).then(function(r){return r.json().then(function(p){if(!r.ok)throw new Error(p.error||'Could not publish result.');return p;});})
+      .then(function(p){status.textContent='Sent: '+p.detected_total+' palms detected, YLD '+p.yld_percentage+'%. GPS was '+(p.gps_available?'included':'not available')+'. Open the user site to view it.';})
+      .catch(function(e){status.textContent=e.message;}).finally(function(){capture.disabled=false;});
+    },'image/jpeg',.9);
+  };
+  window.onbeforeunload=function(){
+    if(stream)stream.getTracks().forEach(function(t){t.stop();});
+  };
+})();
+</script>
+</body>
+</html>

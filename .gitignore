@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# Datasets
+#
+# Images are large, regenerable and not source. Keep them in Drive; the
+# augmented sets are rebuilt with scripts/augment_dataset.py.
+# ---------------------------------------------------------------------------
+dataset/
+dataset_aug/
+dataset_bal/
+a/
+*.zip
+
+# Ultralytics label scan caches
+*.cache
+
+# ---------------------------------------------------------------------------
+# Training artefacts
+#
+# runs/ holds checkpoints, plots and val output -- rebuilt on every training
+# run and easily hundreds of MB.
+# ---------------------------------------------------------------------------
+runs/
+wandb/
+yolo11*.pt
+
+# ---------------------------------------------------------------------------
+# Model weights
+#
+# best.onnx is deliberately NOT ignored: Vercel serves it at runtime, so it has
+# to be committed (~38 MB, within GitHub's 100 MB file limit). The PyTorch
+# checkpoints are training artefacts and stay in Drive.
+# ---------------------------------------------------------------------------
+*.pt
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Tooling / OS
+# ---------------------------------------------------------------------------
+.vercel
+.env
+.env.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

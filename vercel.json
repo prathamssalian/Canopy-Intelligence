@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{templates/**,best.onnx}",
+      "excludeFiles": "{dataset/**,dataset_aug/**,dataset_bal/**,a/**,runs/**,notebooks/**,scripts/**,*.pt}"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+}

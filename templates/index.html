@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canopy / Arecanut intelligence</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root { --ink: #10211b; --muted: #6c7b75; --paper: #f3f7f2; --line: #d8e2d9; --leaf: #2c9a68; --lime: #c8ec62; --coral: #e65f4d; --navy: #102c35; }
+
+    * { box-sizing: border-box; }
+
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: 'Space Grotesk', sans-serif; line-height: 1.5; overflow-x: hidden; }
+    body:before { content: ''; position: fixed; inset: 0; z-index: -2; opacity: .3; background-image: linear-gradient(rgba(44,154,104,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(44,154,104,.08) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, #000, transparent 80%); }
+    .shell { max-width: 1280px; min-height: 100vh; margin: 0 auto; padding: 24px 26px 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; animation: rise .7s ease both; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; letter-spacing: -.03em; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: var(--navy); border: 1px solid var(--navy); border-radius: 50%; font-family: 'DM Mono', monospace; font-size: 14px; }
+    .top-meta { color: var(--muted); font: 11px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 480px; gap: 45px; align-items: center; min-height: calc(100vh - 82px); padding: 20px 0 70px; }
+    .eyebrow { display: flex; align-items: center; gap: 9px; color: var(--leaf); font: 11px 'DM Mono', monospace; letter-spacing: .13em; text-transform: uppercase; }
+    .pulse { width: 7px; height: 7px; background: var(--leaf); border-radius: 50%; box-shadow: 0 0 0 0 rgba(44,154,104,.4); animation: pulse 2s infinite; }
+    h1 { max-width: 650px; margin: 18px 0 20px; font-size: clamp(48px, 7vw, 86px); line-height: .95; letter-spacing: -.075em; font-weight: 600; }
+    h1 em { color: var(--coral); font-style: normal; }
+    .intro { max-width: 470px; margin: 0; color: var(--muted); font-size: 16px; }
+    .hero-action { display: flex; align-items: center; gap: 14px; margin-top: 30px; }
+    .hero-action button { width: auto; min-width: 158px; padding: 13px 21px; }
+    .hero-action .file-name { margin: 0; text-align: left; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .orbital { position: relative; width: 430px; height: 430px; margin: auto; perspective: 900px; filter: drop-shadow(0 30px 28px rgba(16,44,53,.14)); }
+    .orbital:before { content: ''; position: absolute; inset: 50px; border-radius: 50%; background: radial-gradient(circle at 33% 27%, #ecf8b5 0 6%, #b8e58a 18%, #70c97c 42%, #287f6e 72%, #123c47 100%); box-shadow: inset -30px -38px 55px rgba(16,44,53,.38), inset 15px 8px 30px rgba(255,255,255,.24); animation: float 5s ease-in-out infinite; }
+    .orbital:after { content: ''; position: absolute; inset: 96px; border-radius: 50%; border: 1px solid rgba(255,255,255,.16); transform: rotate(-22deg) skewX(-15deg); animation: globe 8s ease-in-out infinite; }
+    .orbit { position: absolute; inset: 8px; border: 1px solid rgba(44,154,104,.45); border-radius: 50%; transform: rotateX(66deg) rotateZ(-20deg); animation: spin 15s linear infinite; }
+    .orbit.two { inset: 35px -10px; transform: rotateX(66deg) rotateZ(55deg); animation-duration: 19s; animation-direction: reverse; border-color: rgba(230,95,77,.38); }
+    .orbit:after { content: ''; position: absolute; top: 12px; left: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 18px var(--coral); }
+    .orbital-label { position: absolute; right: 4px; bottom: 30px; padding: 9px 12px; color: var(--navy); background: rgba(255,255,255,.72); border: 1px solid var(--line); font: 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; backdrop-filter: blur(8px); }
+    .workspace { display: none; }
+    .panel { background: rgba(255,255,255,.76); border: 1px solid var(--line); border-radius: 4px; padding: 26px; box-shadow: 0 16px 45px rgba(16,44,53,.05); animation: rise .7s .15s ease both; }
+    .panel.dark { color: #fff; background: var(--navy); border-color: var(--navy); }
+    .panel-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
+    .mono { color: var(--muted); font: 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .dark .mono { color: #9ab1ad; }
+    .dropzone { display: block; min-height: 190px; padding: 35px 20px; text-align: center; border: 1px dashed #a9c6ae; background: rgba(243,247,242,.72); cursor: pointer; transition: background .25s, border .25s, transform .25s; }
+    .dropzone:hover { border-color: var(--leaf); background: #eef8eb; transform: translateY(-2px); }
+    .upload-icon { display: grid; place-items: center; width: 50px; height: 50px; margin: 0 auto 16px; color: var(--leaf); border: 1px solid #a9c6ae; border-radius: 50%; font-size: 23px; }
+    .drop-title { margin: 0 0 4px; font-size: 17px; font-weight: 600; }
+    .drop-caption { margin: 0; color: var(--muted); font: 11px 'DM Mono', monospace; }
+    input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .file-name { display: block; min-height: 18px; margin: 11px 0 14px; color: var(--leaf); font: 11px 'DM Mono', monospace; text-align: center; }
+    button { width: 100%; padding: 14px 22px; color: var(--navy); background: var(--lime); border: 0; border-radius: 2px; font: 600 14px 'Space Grotesk', sans-serif; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(200,236,98,.2); }
+    button:disabled { opacity: .6; cursor: default; }
+    .status-list { display: grid; gap: 17px; margin-top: 30px; }
+    .status { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.13); color: #d7e6df; font-size: 13px; }
+    .status strong { color: #fff; font: 11px 'DM Mono', monospace; }
+    .check { color: var(--lime); margin-right: 8px; }
+    .error { margin-bottom: 18px; padding: 11px 13px; color: #8a3028; background: #fff0eb; border: 1px solid #f0b5a9; font-size: 13px; }
+    .results { margin-top: 18px; animation: rise .7s ease both; }
+    .result-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 18px; margin-bottom: 18px; }
+    .metric { display: flex; align-items: end; justify-content: space-between; margin: 20px 0 25px; }
+    .rate-value { color: var(--coral); font-size: 62px; line-height: .85; letter-spacing: -.08em; }
+    .rate-label { max-width: 92px; color: var(--muted); font-size: 12px; line-height: 1.2; }
+    .bar { display: flex; height: 9px; overflow: hidden; background: var(--line); }
+    .bar-yld { background: var(--coral); }.bar-healthy { background: var(--leaf); }
+    .bar-key { display: flex; justify-content: space-between; margin-top: 10px; color: var(--muted); font: 11px 'DM Mono', monospace; }
+    .dot { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; }
+    .note { margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .result-image { display: block; width: 100%; max-height: 410px; object-fit: contain; background: #dfe8e0; }
+    .camera-panel { display: none; margin-top: 18px; }
+    .camera-panel.active { display: block; }
+    .camera-stage { position: relative; overflow: hidden; background: #102c35; }
+    .camera-stage video { display: block; width: 100%; }
+    .camera-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .camera-controls { display: flex; gap: 12px; align-items: center; margin-top: 16px; }
+    .camera-controls button { width: auto; }
+    .camera-status { margin: 0; color: var(--muted); font: 11px 'DM Mono', monospace; }
+    .scroll { max-height: 340px; overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font: 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .tag { font-weight: 600; }.tag-healthy { color: var(--leaf); }.tag-yld { color: var(--coral); }
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-12px) rotate(5deg); } }
+    @keyframes globe { 0%, 100% { transform: rotate(-22deg) skewX(-15deg) scale(.98); opacity: .45; } 50% { transform: rotate(18deg) skewX(15deg) scale(1.04); opacity: .8; } }
+    @keyframes spin { to { transform: rotateX(66deg) rotateZ(340deg); } }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(44,154,104,0); } 100% { box-shadow: 0 0 0 0 rgba(44,154,104,0); } }
+    @media (max-width: 780px) { .shell { padding: 20px 17px 35px; }.top-meta { display: none; }.hero, .result-grid { grid-template-columns: 1fr; gap: 34px; min-height: auto; padding-top: 70px; }.orbital { width: 290px; height: 290px; order: -1; }.hero { padding-bottom: 35px; } h1 { font-size: 56px; }.panel { padding: 21px; }.hero-action { flex-wrap: wrap; } }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+    /* Minimal application layout */
+    body { background: #f7f8f6; }
+    body:before, .orbital { display: none; }
+    .shell { max-width: 920px; padding: 28px 22px 48px; }
+    .topbar { padding-bottom: 42px; }
+    .top-meta { color: #7c847f; }
+    .hero { display: block; min-height: auto; padding: 0 0 22px; }
+    .hero > div:first-child { max-width: 680px; margin: 0 auto; text-align: center; }
+    .eyebrow { justify-content: center; color: #527b62; }
+    .pulse { display: none; }
+    h1 { max-width: none; margin: 16px 0 12px; color: #1c2a22; font-size: clamp(36px, 6vw, 58px); letter-spacing: -.06em; }
+    h1 em { color: #4d8b64; }
+    .intro { max-width: 520px; margin: 0 auto; color: #68736c; font-size: 15px; }
+    .hero-action { justify-content: center; margin: 26px auto 0; padding: 18px; background: #fff; border: 1px solid #e1e6e1; border-radius: 8px; }
+    .hero-action button { min-width: 142px; padding: 11px 16px; font-size: 13px; }
+    .hero-action button:last-of-type { color: #fff; background: #315d43; }
+    .file-name { color: #68736c; }
+    .results { max-width: 760px; margin: 22px auto 0; }
+    .result-grid { grid-template-columns: 1fr 1.35fr; gap: 14px; }
+    .panel { padding: 20px; border-color: #e1e6e1; border-radius: 8px; box-shadow: none; animation: none; }
+    .panel-head { margin-bottom: 16px; }
+    h2 { font-size: 16px; }
+    .rate-value { font-size: 52px; }
+    .camera-panel { max-width: 760px; margin: 14px auto 0; }
+    .camera-stage { border-radius: 5px; }
+    .camera-controls button { padding: 10px 16px; }
+    .camera-status { font-size: 10px; }
+    @media (max-width: 780px) {
+        .shell { padding: 22px 16px 36px; }
+        .topbar { padding-bottom: 34px; }
+        .hero-action { align-items: stretch; flex-direction: column; }
+        .hero-action button { width: 100%; }
+        .hero-action .file-name { order: -1; text-align: center; }
+        .result-grid { gap: 14px; }
+    }
+</style>
+</head>
+<body>
+<main class="shell">
+    <nav class="topbar"><div class="brand"><span class="brand-mark">C/</span> Canopy intelligence</div><div class="top-meta"><a href="/drone">DRONE SITE</a> &nbsp; / &nbsp; USER SITE</div></nav>
+    <section class="hero">
+        <div><div class="eyebrow"><span class="pulse"></span> Arecanut health detection</div><h1>Detect <em>YLD</em> simply.</h1><p class="intro">Upload an image or use your camera to identify healthy and yellow leaf disease palms.</p>{% if error %}<div class="error">{{ error }}</div>{% endif %}<form method="POST" action="{{ form_action|default('/') }}" enctype="multipart/form-data" id="form" class="hero-action"><label class="sr-only" for="file">Choose a drone image</label><input type="file" name="image" id="file" accept="image/*" required><button type="button" id="choose">Choose image <span aria-hidden="true">&rarr;</span></button><button type="submit" id="analyse" hidden>Run analysis</button><span class="file-name" id="file-name">No file selected</span><button type="button" id="open-camera">Open camera</button></form></div>
+        <div class="orbital" aria-hidden="true"><div class="orbit"></div><div class="orbit two"></div><div class="orbital-label">YOLO11s / ONNX</div></div>
+    </section>
+    {% if result_image %}
+    <section class="results">
+        <div class="result-grid">
+            <div class="panel"><div class="panel-head"><h2>Plot composition</h2><span class="mono">Estimate</span></div><div class="metric"><div class="rate-value">{{ yld_percentage }}%</div><div class="rate-label">of palms affected by YLD</div></div><div class="bar"><div class="bar-yld" style="width: {{ yld_percentage }}%"></div><div class="bar-healthy" style="width: {{ 100 - yld_percentage }}%"></div></div><div class="bar-key"><span><span class="dot" style="background:var(--coral)"></span>~{{ estimated_yld }} YLD</span><span><span class="dot" style="background:var(--leaf)"></span>~{{ estimated_healthy }} healthy</span></div><div class="note">Marked <strong>{{ detected_total }}</strong> palms: {{ detected_healthy }} healthy, {{ detected_yld }} YLD. Estimates are bias-corrected from measured detection rates.</div></div>
+            <div class="panel"><div class="panel-head"><h2>Detection map</h2><span class="mono">Annotated output</span></div><img src="{{ result_image }}" class="result-image" alt="Detection result"></div>
+        </div>
+        <div class="panel"><div class="panel-head"><h2>Individual detections</h2><span class="mono">{{ detected_total }} objects</span></div>
+            {% if detections %}
+            {% if gps_available %}
+            <div class="note" style="margin-top:0;margin-bottom:14px;padding-top:0;border-top:0">Image: <strong>{{ image_filename }}</strong>. GPS source: <strong>{{ gps_source_filename }}</strong>. Tree coordinates are estimated from each tree's image position and that drone GPS record.</div>
+            {% else %}
+            <div class="error">No GPS metadata was found for <strong>{{ image_filename }}</strong>. Use the original drone image file with its GPS data, or an image containing embedded GPS metadata.</div>
+            {% endif %}
+            <div class="scroll"><table><tr><th>Tree</th><th>Class</th><th>Confidence</th><th>Latitude</th><th>Longitude</th></tr>
+            {% for detection in detections %}
+            <tr><td>{{ detection.tree_id }}</td><td class="tag tag-{{ detection.class }}">{{ detection.class }}</td><td>{{ detection.confidence }}%</td>
+            <td>{{ detection.latitude if detection.latitude is not none else '—' }}</td>
+            <td>{{ detection.longitude if detection.longitude is not none else '—' }}</td></tr>
+            {% endfor %}</table></div>
+            {% else %}<p style="color:var(--muted)">No palms detected in this image.</p>{% endif %}</div>
+    </section>
+    {% endif %}
+    <section class="camera-panel panel" id="camera-panel">
+        <div class="panel-head"><h2>Live camera detection</h2><span class="mono">Browser camera</span></div>
+        <div class="camera-stage">
+            <video id="camera-video" autoplay muted playsinline></video>
+            <canvas id="camera-overlay" aria-label="Live detection boxes"></canvas>
+        </div>
+        <div class="camera-controls">
+            <button type="button" id="close-camera">Close camera</button>
+            <p class="camera-status" id="camera-status">Requesting camera access…</p>
+        </div>
+    </section>
+</main>
+
+<script>
+// Drone stills routinely exceed 8 MB, but Vercel caps a request body at ~4.5 MB.
+// Downscale in the browser before upload; the model sees 640px anyway, so
+// capping the long edge at 1600px costs no accuracy.
+(function () {
+    var MAX_EDGE = 1600, form = document.getElementById('form'),
+        input = document.getElementById('file'), choose = document.getElementById('choose'), button = document.getElementById('analyse'),
+        fileName = document.getElementById('file-name'),
+        resized = false;
+
+    choose.addEventListener('click', function () {
+        if (input.files[0]) form.requestSubmit();
+        else input.click();
+    });
+
+    input.addEventListener('change', function () {
+        if (!input.files[0]) return;
+        fileName.textContent = input.files[0].name;
+        choose.innerHTML = 'Analyse image <span aria-hidden="true">&rarr;</span>';
+    });
+
+    // Call the real method off the prototype: any control named or id'd
+    // "submit" would otherwise shadow it on the form instance.
+    function reallySubmit() {
+        HTMLFormElement.prototype.submit.call(form);
+    }
+
+    function giveUp(message) {
+        resized = true;
+        button.disabled = false;
+        button.textContent = message || 'Analyse';
+        reallySubmit();
+    }
+
+    form.addEventListener('submit', function (event) {
+        var file = input.files[0];
+        if (!file || resized) return;          // nothing chosen, or already shrunk
+
+        event.preventDefault();
+        button.disabled = true;
+        button.textContent = 'Preparing…';
+
+        var image = new Image(), url = URL.createObjectURL(file);
+
+        image.onload = function () {
+            URL.revokeObjectURL(url);
+            try {
+                var scale = Math.min(1, MAX_EDGE / Math.max(image.width, image.height));
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.round(image.width * scale);
+                canvas.height = Math.round(image.height * scale);
+                canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(function (blob) {
+                    try {
+                        // Keep the original if the canvas gave us nothing useful.
+                        if (blob) {
+                            var data = new DataTransfer();
+                            data.items.add(new File([blob], file.name, { type: 'image/jpeg' }));
+                            input.files = data.files;
+                        }
+                    } catch (err) {
+                        // DataTransfer is unavailable in a few browsers; the
+                        // original file is still attached, so just send it.
+                    }
+                    giveUp();
+                }, 'image/jpeg', 0.9);
+            } catch (err) {
+                giveUp();               // never strand the user on "Preparing…"
+            }
+        };
+
+        image.onerror = function () {   // not decodable here; let the server judge
+            URL.revokeObjectURL(url);
+            giveUp();
+        };
+
+        image.src = url;
+    });
+})();
+
+(function () {
+    var openButton = document.getElementById('open-camera');
+    var closeButton = document.getElementById('close-camera');
+    var panel = document.getElementById('camera-panel');
+    var video = document.getElementById('camera-video');
+    var overlay = document.getElementById('camera-overlay');
+    var context = overlay.getContext('2d');
+    var status = document.getElementById('camera-status');
+    var stream = null, timer = null, busy = false;
+    var analysedWidth = 0, analysedHeight = 0;
+
+    if (!openButton) return;
+
+    function stopCamera() {
+        if (timer) window.clearInterval(timer);
+        timer = null;
+        if (stream) stream.getTracks().forEach(function (track) { track.stop(); });
+        stream = null;
+        video.srcObject = null;
+        panel.classList.remove('active');
+    }
+
+    function analyseFrame() {
+        if (busy || !video.videoWidth) return;
+        busy = true;
+        var canvas = document.createElement('canvas');
+        var scale = Math.min(1, 512 / Math.max(video.videoWidth, video.videoHeight));
+        canvas.width = Math.round(video.videoWidth * scale);
+        canvas.height = Math.round(video.videoHeight * scale);
+        analysedWidth = canvas.width;
+        analysedHeight = canvas.height;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(function (blob) {
+            if (!blob) {
+                busy = false;
+                return;
+            }
+            var data = new FormData();
+            data.append('frame', blob, 'camera.jpg');
+            // Use the function's canonical Vercel path. Vercel rewrites all
+            // routes to /api/index before Flask receives the request.
+            fetch('/api/index', { method: 'POST', body: data })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Server could not analyse the frame.');
+                    return response.json();
+                })
+                .then(function (payload) {
+                    drawDetections(payload.detections);
+                    status.textContent = 'Live · ' + payload.detected_total + ' palms · YLD ' + payload.yld_percentage + '%';
+                })
+                .catch(function (error) {
+                    status.textContent = error.message;
+                })
+                .finally(function () { busy = false; });
+        }, 'image/jpeg', 0.6);
+    }
+
+    function drawDetections(detections) {
+        overlay.width = video.videoWidth;
+        overlay.height = video.videoHeight;
+        context.clearRect(0, 0, overlay.width, overlay.height);
+        var scaleX = overlay.width / analysedWidth;
+        var scaleY = overlay.height / analysedHeight;
+        detections.forEach(function (detection) {
+            var box = detection.box;
+            var x = box[0] * scaleX, y = box[1] * scaleY;
+            var width = (box[2] - box[0]) * scaleX;
+            var height = (box[3] - box[1]) * scaleY;
+            var isYld = detection.class === 'yld';
+            context.strokeStyle = isYld ? '#ef4444' : '#22c55e';
+            context.fillStyle = context.strokeStyle;
+            context.lineWidth = Math.max(2, overlay.width / 400);
+            context.strokeRect(x, y, width, height);
+            var label = detection.class + ' ' + (detection.confidence / 100).toFixed(2);
+            context.font = '12px sans-serif';
+            var labelWidth = context.measureText(label).width + 8;
+            context.fillRect(x, Math.max(0, y - 20), labelWidth, 20);
+            context.fillStyle = '#fff';
+            context.fillText(label, x + 4, Math.max(14, y - 6));
+        });
+    }
+
+    openButton.addEventListener('click', function () {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            status.textContent = 'Camera access is not supported by this browser.';
+            panel.classList.add('active');
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+            .then(function (newStream) {
+                stream = newStream;
+                video.srcObject = stream;
+                panel.classList.add('active');
+                status.textContent = 'Camera active · analysing frames…';
+                timer = window.setInterval(analyseFrame, 350);
+            })
+            .catch(function () {
+                panel.classList.add('active');
+                status.textContent = 'Camera access was denied or unavailable.';
+            });
+    });
+
+    closeButton.addEventListener('click', stopCamera);
+    window.addEventListener('beforeunload', stopCamera);
+})();
+</script>
+</body>
+</html>
