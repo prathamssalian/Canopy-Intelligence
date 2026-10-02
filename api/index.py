@@ -251,7 +251,33 @@ def exif_gps(image):
     }
 
 
-def analyse_upload(upload):
+def parse_camera_gps(form):
+    """Read validated live GPS supplied by the drone camera browser."""
+    if not form.get("gps_latitude") or not form.get("gps_longitude"):
+        return None
+
+    try:
+        latitude = float(form["gps_latitude"])
+        longitude = float(form["gps_longitude"])
+        altitude = float(form.get("gps_altitude") or 1.0)
+        accuracy = float(form.get("gps_accuracy") or 0.0)
+    except (TypeError, ValueError):
+        raise ValueError("The camera GPS coordinates are invalid.")
+
+    if not -90 <= latitude <= 90 or not -180 <= longitude <= 180:
+        raise ValueError("The camera GPS coordinates are outside valid ranges.")
+    if not math.isfinite(altitude) or not math.isfinite(accuracy):
+        raise ValueError("The camera GPS values must be finite numbers.")
+
+    return {
+        "latitude": latitude,
+        "longitude": longitude,
+        "altitude": max(altitude, 1.0),
+        "accuracy": max(accuracy, 0.0),
+    }
+
+
+def analyse_upload(upload, camera_gps=None):
     """Analyse an uploaded image and return a renderable/publishable result."""
     if upload is None or upload.filename == "":
         raise ValueError("Please select an image.")
@@ -266,7 +292,7 @@ def analyse_upload(upload):
     filename = Path(upload.filename).name
     gps_source = filename.lower()
     detections = detect(image)
-    drone_gps = embedded_gps or GPS_DATA.get(gps_source)
+    drone_gps = camera_gps or embedded_gps or GPS_DATA.get(gps_source)
     if drone_gps:
         for tree_id, detection in enumerate(detections, start=1):
             detection["tree_id"] = tree_id
@@ -293,10 +319,18 @@ def analyse_upload(upload):
         "gps_available": drone_gps is not None,
         "image_filename": filename,
         "gps_source_filename": (
+            "live drone camera GPS"
+            if camera_gps
+            else
             "embedded image GPS"
             if embedded_gps
             else gps_source
             if drone_gps
+            else None
+        ),
+        "gps_accuracy_m": (
+            round(camera_gps["accuracy"], 1)
+            if camera_gps and camera_gps["accuracy"] > 0
             else None
         ),
     }
@@ -447,7 +481,8 @@ def publish_drone_result():
         return jsonify({"error": "Captured drone image was not provided."}), 400
 
     try:
-        LATEST_RESULT = analyse_upload(upload)
+        camera_gps = parse_camera_gps(request.form)
+        LATEST_RESULT = analyse_upload(upload, camera_gps=camera_gps)
     except ValueError as error:
         return jsonify({"error": str(error)}), 400
 
@@ -458,6 +493,7 @@ def publish_drone_result():
             "detected_total": LATEST_RESULT["detected_total"],
             "yld_percentage": LATEST_RESULT["yld_percentage"],
             "gps_available": LATEST_RESULT["gps_available"],
+            "gps_accuracy_m": LATEST_RESULT["gps_accuracy_m"],
         }
     )
 

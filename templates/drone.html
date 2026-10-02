@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Canopy / Drone site</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style>
 body{margin:0;padding:28px;background:#f3f7f2;color:#10211b;font:16px Arial,sans-serif}
 main{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
@@ -16,49 +17,182 @@ button,select{padding:12px 16px;border:0;border-radius:4px;font-size:14px}
 button{background:#c8ec62;color:#102c35;font-weight:bold;cursor:pointer}button:disabled{opacity:.55}
 select{border:1px solid #d8e2d9;background:#fff}.status{color:#527b62}.error{color:#8a3028}
 a{color:#315d43}
+.live-results{display:none}.live-results.active{display:block}
+.live-results table{width:100%;border-collapse:collapse;font-size:13px}
+.live-results th,.live-results td{padding:9px 5px;border-bottom:1px solid #d8e2d9;text-align:left}
+.live-results th{color:#68736c;font-size:10px;text-transform:uppercase}
+.navigate-button{padding:5px 9px;background:#c8ec62;color:#102c35;border:0;border-radius:3px;font-size:17px;cursor:pointer}
+.navigation-modal{display:none;position:fixed;inset:0;z-index:20;align-items:center;justify-content:center;padding:18px;background:rgba(16,44,53,.56)}
+.navigation-modal.active{display:flex}.navigation-dialog{position:relative;width:min(720px,100%);max-height:92vh;overflow-y:auto;padding:22px;background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(16,44,53,.25)}
+.navigation-close{position:absolute;top:10px;right:12px;padding:4px 9px;background:transparent;color:#68736c;font-size:22px}
+.navigation-message{margin:8px 0 14px;color:#68736c;font-size:13px}.navigation-map{height:360px;margin-top:16px;border-radius:5px}
+/* Dark glass dashboard with subtle 3D depth. */
+:root{--bg:#07131b;--surface:rgba(14,31,42,.82);--surface-strong:#102735;--line:rgba(127,211,182,.2);--text:#e8fff6;--muted-dark:#8ba9a6;--accent:#b9f36b;--cyan:#63e6d2;--danger:#ff806d}
+*{box-sizing:border-box}
+body{min-height:100vh;padding:30px;background:radial-gradient(circle at 8% 0%,#164052 0,transparent 34%),radial-gradient(circle at 100% 100%,#1b3d35 0,transparent 30%),var(--bg);color:var(--text);font-family:Arial,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(99,230,210,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(99,230,210,.12) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+main{max-width:1000px;position:relative;perspective:1200px}
+.top{margin-bottom:30px;padding:4px 2px;color:var(--text);letter-spacing:.02em}.top strong{font-size:18px}.top a{color:var(--cyan);text-decoration:none}
+.panel{background:linear-gradient(145deg,rgba(21,52,67,.88),rgba(9,24,34,.88));border:1px solid var(--line);border-radius:18px;padding:25px;margin-bottom:20px;box-shadow:0 24px 55px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.06);backdrop-filter:blur(18px);transform:translateZ(0);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.panel:hover{transform:translateY(-4px) rotateX(.4deg);border-color:rgba(99,230,210,.38);box-shadow:0 30px 65px rgba(0,0,0,.36),0 0 30px rgba(99,230,210,.07)}
+h1{font-size:clamp(32px,5vw,54px);letter-spacing:-.06em}h2{color:var(--text);letter-spacing:-.03em}.muted,.navigation-message{color:var(--muted-dark)}
+.camera{border:1px solid rgba(99,230,210,.25);border-radius:13px;box-shadow:0 14px 35px rgba(0,0,0,.3),inset 0 0 35px rgba(99,230,210,.08)}
+.camera video{min-height:300px;object-fit:cover}
+.controls{margin-top:18px}button{border-radius:9px;background:linear-gradient(135deg,var(--accent),#74d98b);box-shadow:0 8px 20px rgba(185,243,107,.15);transition:transform .2s,box-shadow .2s}button:hover:not(:disabled){transform:translateY(-3px) scale(1.02);box-shadow:0 14px 28px rgba(185,243,107,.25)}.status{color:var(--accent)}
+.live-results table{color:var(--text)}.live-results th{color:var(--muted-dark)}.live-results th,.live-results td{border-color:var(--line)}
+.navigate-button{background:var(--accent);box-shadow:none}.navigation-modal{background:rgba(1,8,13,.78);backdrop-filter:blur(8px)}.navigation-dialog{background:linear-gradient(145deg,#173849,#0b1d29);border:1px solid var(--line);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.5)}.navigation-close{color:var(--muted-dark)}.navigation-map{border:1px solid var(--line);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+@media(max-width:700px){body{padding:18px}.panel{padding:19px;border-radius:14px}.camera video{min-height:210px}}
+.brand-mark{display:inline-grid;place-items:center;width:30px;height:30px;margin-right:8px;border:1px solid var(--cyan);border-radius:50%;color:var(--cyan);font:12px monospace;vertical-align:middle}
+.top strong{display:flex;align-items:center;letter-spacing:.08em}.top small{color:var(--muted-dark);font:9px monospace;letter-spacing:.14em;margin-left:8px}.section-kicker{color:var(--cyan);font:10px monospace;letter-spacing:.16em}
+.mission-rail{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:22px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--line);box-shadow:0 14px 30px rgba(0,0,0,.18)}.mission-rail span{display:flex;flex-direction:column;gap:4px;padding:11px 14px;background:rgba(11,29,40,.78)}.mission-rail b{color:var(--muted-dark);font:9px monospace;letter-spacing:.12em}.mission-rail em{color:var(--leaf);font:10px monospace;font-style:normal}
+.camera{position:relative}.camera-hud{position:absolute;z-index:2;top:14px;left:16px;right:16px;display:flex;gap:16px;align-items:center;color:var(--lime);font:10px monospace;letter-spacing:.12em;text-shadow:0 0 12px rgba(185,243,107,.5);pointer-events:none}.camera-hud span:not(.rec-dot){margin-left:auto}.rec-dot{width:7px;height:7px;border-radius:50%;background:var(--danger);box-shadow:0 0 12px var(--danger);animation:blink 1.4s infinite}.camera-corner{position:absolute;z-index:2;width:24px;height:24px;border-color:var(--cyan);pointer-events:none}.camera-corner.tl{top:35px;left:16px;border-top:1px solid;border-left:1px solid}.camera-corner.tr{top:35px;right:16px;border-top:1px solid;border-right:1px solid}.camera-corner.bl{bottom:16px;left:16px;border-bottom:1px solid;border-left:1px solid}.camera-corner.br{right:16px;bottom:16px;border-bottom:1px solid;border-right:1px solid}@keyframes blink{50%{opacity:.35}}
+@media(max-width:700px){.mission-rail{grid-template-columns:repeat(2,1fr)}.camera-hud{gap:8px;font-size:8px}.camera-hud span:not(.rec-dot){margin-left:4px}}
 </style>
 </head>
 <body>
 <main>
-<div class="top"><strong>Canopy / Drone site</strong><a href="/user">Open user site</a></div>
+<div class="top"><strong><span class="brand-mark">C/</span> CANOPY <small>DRONE COMMAND</small></strong><a href="/user">OPEN USER SITE ↗</a></div>
+<div class="mission-rail"><span><b>MISSION</b><em>LIVE AERIAL SCAN</em></span><span><b>AI ENGINE</b><em>YOLO11s / ONNX</em></span><span><b>UPLINK</b><em>USER SITE SYNC</em></span><span><b>MODE</b><em>REAL-TIME</em></span></div>
 <section class="panel">
-<h1>Capture and send drone analysis</h1>
-<p class="muted">Capture an image from the drone camera and send the YOLO/YLD result to the user site. GPS is resolved for uploaded original drone images on the user site.</p>
-<div class="camera"><video id="video" autoplay muted playsinline></video><canvas id="overlay"></canvas></div>
+<div class="section-kicker">MISSION CONTROL / 01</div><h1>Live drone analysis</h1>
+<p class="muted">Open the drone camera once. Frames are analysed continuously and the latest YOLO/YLD detections, tree coordinates, and camera GPS are shared with the user site automatically.</p>
+<div class="camera"><div class="camera-hud"><span class="rec-dot"></span> LIVE <span>AI ACTIVE</span><span>GPS LOCK</span></div><video id="video" autoplay muted playsinline></video><canvas id="overlay"></canvas><div class="camera-corner tl"></div><div class="camera-corner tr"></div><div class="camera-corner bl"></div><div class="camera-corner br"></div></div>
 <div class="controls">
 <button id="start" type="button">Start camera</button>
-<button id="capture" type="button" disabled>Capture and send</button>
 </div>
 <p id="status" class="status">Camera is off.</p>
+<p id="gps-status" class="muted">GPS: waiting for location permission.</p>
 </section>
+<section class="panel live-results" id="live-results">
+<h2>Live detected tree locations</h2>
+<p class="muted" id="live-location-status">Waiting for the first analysed frame.</p>
+<div style="overflow:auto"><table><thead><tr><th>Tree</th><th>Class</th><th>Confidence</th><th>Latitude</th><th>Longitude</th><th>Navigate</th></tr></thead><tbody id="live-detections"></tbody></table></div>
+</section>
+<div class="navigation-modal" id="navigation-modal" role="dialog" aria-modal="true" aria-labelledby="navigation-title">
+<div class="navigation-dialog">
+<button class="navigation-close" id="navigation-close" type="button" aria-label="Close navigation">×</button>
+<h2 id="navigation-title">Navigate to detected tree</h2>
+<p class="navigation-message" id="navigation-message">Reading live GPS location…</p>
+<div class="navigation-map" id="navigation-map"></div>
+</div>
+</div>
 </main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 (function () {
   var video=document.getElementById('video'), overlay=document.getElementById('overlay');
-  var start=document.getElementById('start'), capture=document.getElementById('capture');
-  var status=document.getElementById('status'), stream=null;
+  var status=document.getElementById('status'), gpsStatus=document.getElementById('gps-status');
+  var liveResults=document.getElementById('live-results'), liveDetections=document.getElementById('live-detections');
+  var liveLocationStatus=document.getElementById('live-location-status'), lastPublished=null;
+  var stream=null, timer=null, gpsWatch=null, latestCoords=null, busy=false;
   start.onclick=function(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){status.textContent='Camera access is not supported.';return;}
+    if(!navigator.geolocation){status.textContent='GPS is not supported by this browser.';return;}
     navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(function(s){
-      stream=s;video.srcObject=s;capture.disabled=false;status.textContent='Camera ready.';
+      stream=s;video.srcObject=s;status.textContent='Camera ready · waiting for GPS…';
+      gpsWatch=navigator.geolocation.watchPosition(function(position){
+        latestCoords=position.coords;
+        gpsStatus.textContent='GPS: '+latestCoords.latitude.toFixed(6)+', '+latestCoords.longitude.toFixed(6)+
+          (latestCoords.accuracy ? ' (±'+Math.round(latestCoords.accuracy)+' m)' : '');
+        if(!timer)timer=window.setInterval(analyseFrame,1000);
+      },function(error){
+        gpsStatus.textContent='GPS unavailable: '+(error.code===1?'location permission was denied.':'could not read the camera position.');
+        status.textContent='Live analysis paused until GPS is available.';
+      },{enableHighAccuracy:true,maximumAge:1000,timeout:10000});
     }).catch(function(){status.textContent='Camera access was denied or unavailable.';});
   };
-  capture.onclick=function(){
-    if(!video.videoWidth)return;
-    capture.disabled=true;status.textContent='Running YOLO analysis…';
+  function analyseFrame(){
+    if(busy||!video.videoWidth||!latestCoords)return;
+    busy=true;
     var canvas=document.createElement('canvas'), scale=Math.min(1,1600/Math.max(video.videoWidth,video.videoHeight));
     canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
     canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
     canvas.toBlob(function(blob){
+      if(!blob){busy=false;return;}
       var data=new FormData();data.append('frame',blob,'camera.jpg');
+      data.append('gps_latitude',latestCoords.latitude);data.append('gps_longitude',latestCoords.longitude);
+      if(latestCoords.altitude!==null)data.append('gps_altitude',latestCoords.altitude);
+      if(latestCoords.accuracy!==null)data.append('gps_accuracy',latestCoords.accuracy);
       fetch('/drone/publish',{method:'POST',body:data}).then(function(r){return r.json().then(function(p){if(!r.ok)throw new Error(p.error||'Could not publish result.');return p;});})
-      .then(function(p){status.textContent='Sent: '+p.detected_total+' palms detected, YLD '+p.yld_percentage+'%. GPS was '+(p.gps_available?'included':'not available')+'. Open the user site to view it.';})
-      .catch(function(e){status.textContent=e.message;}).finally(function(){capture.disabled=false;});
-    },'image/jpeg',.9);
+        .then(function(p){status.textContent='Live · '+p.detected_total+' palms · YLD '+p.yld_percentage+'% · shared with user site';pollLatest();})
+        .catch(function(e){status.textContent=e.message;}).finally(function(){busy=false;});
+    },'image/jpeg',.75);
   };
+  function pollLatest(){
+    fetch('/user/latest',{cache:'no-store'}).then(function(r){return r.json();}).then(function(payload){
+      if(!payload.available||!payload.detections)return;
+      lastPublished=payload;
+      liveResults.classList.add('active');
+      liveLocationStatus.textContent='GPS source: '+(payload.gps_source_filename||'unavailable')+
+        (payload.gps_accuracy_m?' · camera accuracy ±'+payload.gps_accuracy_m+' m':'');
+      liveDetections.innerHTML=payload.detections.map(function(d){
+        var action=d.latitude!==null&&d.longitude!==null
+          ? '<button class="navigate-button" type="button" title="Navigate to tree '+d.tree_id+'" onclick="openNavigation('+d.tree_id+','+d.latitude+','+d.longitude+')">➜</button>':'—';
+        return '<tr><td>'+d.tree_id+'</td><td>'+d.class+'</td><td>'+d.confidence+'%</td><td>'+ (d.latitude===null?'—':d.latitude)+'</td><td>'+ (d.longitude===null?'—':d.longitude)+'</td><td>'+action+'</td></tr>';
+      }).join('');
+    }).catch(function(){});
+  }
+  pollLatest();
+  window.setInterval(pollLatest,1500);
   window.onbeforeunload=function(){
+    if(timer)window.clearInterval(timer);
+    if(gpsWatch!==null&&navigator.geolocation)navigator.geolocation.clearWatch(gpsWatch);
     if(stream)stream.getTracks().forEach(function(t){t.stop();});
   };
+})();
+
+(function(){
+  var modal=document.getElementById('navigation-modal'), message=document.getElementById('navigation-message');
+  var map=null, markers=null, route=null, watch=null, destination=null, lastRoute=null, lastRouteAt=0, requestId=0;
+  function coords(v){return Number(v).toFixed(6);}
+  function messageFor(lat,lon,distance,suffix){
+    message.textContent='Tree '+destination.id+' is '+(distance/1000).toFixed(2)+' km from you. Your location: '+coords(lat)+', '+coords(lon)+'. Tree: '+coords(destination.lat)+', '+coords(destination.lon)+'.'+suffix;
+  }
+  function routeFrom(lat,lon){
+    if(!destination)return;
+    var id=++requestId;lastRoute=[lat,lon];lastRouteAt=Date.now();
+    fetch('https://router.project-osrm.org/route/v1/driving/'+lon+','+lat+';'+destination.lon+','+destination.lat+'?overview=full&geometries=geojson')
+      .then(function(r){if(!r.ok)throw new Error();return r.json();})
+      .then(function(data){
+        if(id!==requestId||!data.routes||!data.routes.length)throw new Error();
+        if(route)map.removeLayer(route);
+        route=L.geoJSON(data.routes[0].geometry,{style:{color:'#e65f4d',weight:5,opacity:.85}}).addTo(map);
+        var d=L.latLng(lat,lon).distanceTo(L.latLng(destination.lat,destination.lon));
+        messageFor(lat,lon,d,' Road route: '+(data.routes[0].distance/1000).toFixed(2)+' km. Live navigation active.');
+      }).catch(function(){
+        if(id!==requestId)return;
+        if(route)map.removeLayer(route);
+        route=L.polyline([[lat,lon],[destination.lat,destination.lon]],{color:'#e65f4d',weight:4,dashArray:'8 8'}).addTo(map);
+        var d=L.latLng(lat,lon).distanceTo(L.latLng(destination.lat,destination.lon));
+        messageFor(lat,lon,d,' Straight-line guidance is active because a road route is unavailable.');
+      });
+  }
+  function update(position){
+    if(!destination||!markers)return;
+    var lat=position.coords.latitude,lon=position.coords.longitude,point=[lat,lon];
+    var d=L.latLng(point).distanceTo(L.latLng(destination.lat,destination.lon));
+    markers.user.setLatLng(point);
+    messageFor(lat,lon,d,d<20?' You have arrived.':' Live navigation active.');
+    if(!lastRoute||L.latLng(lastRoute).distanceTo(L.latLng(point))>30||Date.now()-lastRouteAt>15000)routeFrom(lat,lon);
+  }
+  window.openNavigation=function(id,lat,lon){
+    if(!navigator.geolocation){modal.classList.add('active');message.textContent='GPS is not supported by this browser.';return;}
+    modal.classList.add('active');message.textContent='Reading your live GPS location…';
+    navigator.geolocation.getCurrentPosition(function(position){
+      destination={id:id,lat:Number(lat),lon:Number(lon)};
+      var user=[position.coords.latitude,position.coords.longitude],tree=[destination.lat,destination.lon];
+      if(!map){map=L.map('navigation-map');L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);}
+      if(markers)map.removeLayer(markers);
+      markers={user:L.marker(user).bindPopup('Your live location').addTo(map),tree:L.marker(tree).bindPopup('Tree '+id).addTo(map)};
+      map.fitBounds(L.latLngBounds([user,tree]),{padding:[30,30]});
+      routeFrom(user[0],user[1]);
+      watch=navigator.geolocation.watchPosition(update,function(){message.textContent='GPS signal lost. Waiting for a new position…';},{enableHighAccuracy:true,maximumAge:1000,timeout:10000});
+    },function(){message.textContent='Unable to read your location. Allow GPS permission and try again.';},{enableHighAccuracy:true,maximumAge:0,timeout:10000});
+  };
+  function stop(){if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;destination=null;if(route&&map)map.removeLayer(route);route=null;}
+  document.getElementById('navigation-close').onclick=function(){stop();modal.classList.remove('active');};
+  modal.onclick=function(e){if(e.target===modal){stop();modal.classList.remove('active');}};
+  document.onkeydown=function(e){if(e.key==='Escape'){stop();modal.classList.remove('active');}};
 })();
 </script>
 </body>
