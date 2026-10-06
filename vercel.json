@@ -20,8 +20,20 @@
       "destination": "/api/index?path=/user/latest"
     },
     {
+      "source": "/drone/publish",
+      "destination": "/api/index?path=/drone/publish"
+    },
+    {
+      "source": "/user/analyse",
+      "destination": "/api/index?path=/user/analyse"
+    },
+    {
+      "source": "/camera-detect",
+      "destination": "/api/index?path=/camera-detect"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/api/index"
+      "destination": "/api/index?path=/$1"
     }
   ]
 }
