@@ -417,6 +417,23 @@ def camera_response(upload):
 @app.route("/", methods=["GET", "POST"])
 @app.route("/api/index", methods=["GET", "POST"])
 def index():
+    # Vercel rewrites browser routes to this function and carries the
+    # original route in the query string because Flask otherwise sees only
+    # /api/index.
+    forwarded_path = request.args.get("path")
+    if forwarded_path == "/drone":
+        return drone_site()
+    if forwarded_path == "/drone/publish":
+        return publish_drone_result()
+    if forwarded_path == "/user":
+        return user_site()
+    if forwarded_path == "/user/analyse":
+        return user_analyse()
+    if forwarded_path == "/user/latest":
+        return user_latest()
+    if forwarded_path == "/camera-detect":
+        return camera_detect()
+
     if request.method == "GET":
         return render_template("index.html")
 
