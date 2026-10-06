@@ -6,5 +6,22 @@
       "excludeFiles": "{dataset/**,dataset_aug/**,dataset_bal/**,a/**,runs/**,notebooks/**,scripts/**,*.pt}"
     }
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+  "rewrites": [
+    {
+      "source": "/drone",
+      "destination": "/api/index?path=/drone"
+    },
+    {
+      "source": "/user",
+      "destination": "/api/index?path=/user"
+    },
+    {
+      "source": "/user/latest",
+      "destination": "/api/index?path=/user/latest"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
 }
