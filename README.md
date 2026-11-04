@@ -14,7 +14,7 @@ Inference is performed using **ONNX Runtime on CPU**, without PyTorch at inferen
 ## 🚀 Key Features
 
 - 🛩️ Drone-based arecanut plantation monitoring
-- 🤖 YOLO11s object detection
+- 🤖 YOLO26s object detection
 - 🌴 Healthy and YLD palm classification
 - 📊 Bias-corrected YLD rate estimation
 - 📍 GPS-based tree coordinate estimation
